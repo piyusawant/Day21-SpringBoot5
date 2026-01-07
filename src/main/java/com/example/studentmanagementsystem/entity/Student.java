@@ -1,9 +1,14 @@
 package com.example.studentmanagementsystem.entity;
+import jakarta.persistence.*;
 
-
+@Entity //tells JPA map class to DB table
+@Table(name = "Students")
 public class Student
 {
+    @Id //primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto ID generation
     private Long id;
+
     private String name;
     private String course;
     private String email;

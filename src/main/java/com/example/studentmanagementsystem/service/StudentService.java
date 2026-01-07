@@ -6,7 +6,7 @@ import com.example.studentmanagementsystem.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class StudentService
 {
     private final StudentRepository repository;
@@ -15,27 +15,32 @@ public class StudentService
     {
         this.repository = repository;
     }
-    public List<Student> getAllStudents()
+
+    public Student create(Student student)
+    {
+        return repository.save(student);
+    }
+    public List<Student> getAll()
     {
         return repository.findAll();
     }
-    public Student getStudent(Long id)
+    public Student getById(Long id)
     {
-        return repository.findById(id);
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Student Not Found"));
     }
-    public Student createStudent(StudentDTO dto)
+
+    public Student update(Long id, Student student)
     {
-        Student student = new Student(null, dto.getName(), dto.getCourse(), dto.getEmail());
-        return repository.save(student);
+        Student existing = getById(id);
+        existing.setName(student.getName());
+        existing.setCourse(student.getCourse());
+        existing.setEmail(student.getEmail());
+        return repository.save(existing);
     }
-    public Student updateStudent(Long id, StudentDTO dto)
+
+    public void delete(Long id)
     {
-        Student student = new Student(id, dto.getName(), dto.getCourse(), dto.getEmail());
-        return repository.update(id, student);
-    }
-    public void deleteStudent(Long id)
-    {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 
 }

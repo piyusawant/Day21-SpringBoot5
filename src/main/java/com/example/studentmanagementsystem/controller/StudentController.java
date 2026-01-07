@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/students")
@@ -17,42 +18,53 @@ public class StudentController
     {
         this.service = service;
     }
-    // GET - fetch aal students
-    @GetMapping
-    public ResponseEntity<List<Student>>
-    getAllStudents()
-    {
-        return ResponseEntity.ok(service.getAllStudents());
-    }
-
-    //GET - fetch student by iD
-    @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudent(@PathVariable Long id)
-    {
-        Student student = service.getStudent(id);
-        return student != null ? ResponseEntity.ok(student) : ResponseEntity.notFound().build();
-    }
 
     //POST - create student
     @PostMapping
     public ResponseEntity<Student> createStudent(@RequestBody StudentDTO dto)
     {
-        Student created = service.createStudent(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        Student student = new Student();
+        student.setName(dto.getName());
+        student.setCourse(dto.getCourse());
+        student.setEmail(dto.getEmail());
+
+        Student savedStudent = service.create(student);
+
+        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
+    }
+
+    // GET - fetch all students
+    @GetMapping
+    public ResponseEntity<List<Student>>
+    getAllStudents()
+    {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+    //GET - fetch student by iD
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> getStudentById(@PathVariable Long id)
+    {
+        return ResponseEntity.ok(service.getById(id));
     }
 
     //PUT - Update
     @PutMapping("/{id}")
     public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody StudentDTO dto)
     {
-        return ResponseEntity.ok(service.updateStudent(id, dto));
+        Student student = new Student();
+        student.setName(dto.getName());
+        student.setCourse(dto.getCourse());
+        student.setEmail(dto.getEmail());
+
+        return ResponseEntity.ok(service.update(id, student));
     }
 
     // DELETE - delete student
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id)
     {
-        service.deleteStudent(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
